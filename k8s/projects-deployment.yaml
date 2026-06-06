@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projects-api
+  labels:
+    app: projects-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: projects-api
+  template:
+    metadata:
+      labels:
+        app: projects-api
+    spec:
+      containers:
+        - name: projects-api
+          image: us-central1-docker.pkg.dev/project-1944cf83-7f15-4f33-89b/systeam-repo/projects-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: systeam-config
+            - secretRef:
+                name: systeam-secrets
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: projects-api
+spec:
+  selector:
+    app: projects-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081

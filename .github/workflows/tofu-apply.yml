@@ -1,0 +1,63 @@
+name: 'OpenTofu Apply'
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  tofu:
+    name: 'Tofu Apply'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+
+      - name: Tofu Init
+        run: tofu init
+
+      - name: Tofu Plan
+        run: tofu plan -out=tfplan
+
+      - name: Tofu Apply
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        run: tofu apply -auto-approve tfplan
+
+      - name: Get GKE Credentials
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: systeam-gke-cluster
+          location: us-central1
+
+      - name: Install ArgoCD
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        run: |
+          kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+          kubectl apply --server-side=true --force-conflicts -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+      - name: Apply ArgoCD App
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        run: |
+          kubectl apply -f ../k8s/argocd-app.yaml

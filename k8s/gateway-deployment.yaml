@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: us-central1-docker.pkg.dev/project-1944cf83-7f15-4f33-89b/systeam-repo/gateway:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8989
+          env:
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-api"
+            - name: PROJECT_SERVICE_URL
+              value: "http://projects-api"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8989
