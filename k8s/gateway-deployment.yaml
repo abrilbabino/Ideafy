@@ -25,6 +25,12 @@ spec:
               value: "http://auth-api"
             - name: PROJECT_SERVICE_URL
               value: "http://projects-api"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8989
+            initialDelaySeconds: 15
+            periodSeconds: 10
           resources:
             requests:
               memory: "512Mi"
