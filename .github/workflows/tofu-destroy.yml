@@ -29,6 +29,20 @@ jobs:
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
 
+      - name: Get GKE Credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        continue-on-error: true
+        with:
+          cluster_name: systeam-gke-cluster
+          location: us-central1
+
+      - name: Delete Ingress to clean up GCP resources
+        continue-on-error: true
+        run: |
+          kubectl delete ingress --all --all-namespaces || true
+          echo "Esperando 60s para que Google Cloud elimine los NEGs y Load Balancers..."
+          sleep 60
+
       - name: Tofu Init
         run: tofu init
 
