@@ -22,6 +22,10 @@ provider "google" {
 # ----------------------------------------------------------
 # VPC & Networking
 # ----------------------------------------------------------
+resource "google_compute_global_address" "systeam-static-ip" {
+  name = "systeam-static-ip"
+}
+
 resource "google_compute_network" "vpc" {
   name                    = "${var.cluster_name}-vpc"
   auto_create_subnetworks = false

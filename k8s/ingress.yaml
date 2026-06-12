@@ -4,6 +4,7 @@ metadata:
   name: systeam-ingress
   annotations:
     kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "systeam-static-ip"
 spec:
   defaultBackend:
     service:
