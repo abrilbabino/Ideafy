@@ -6,6 +6,14 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.12"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.14"
+    }
   }
 
   backend "gcs" {
@@ -20,10 +28,31 @@ provider "google" {
 }
 
 # ----------------------------------------------------------
+# Dynamic auth for Helm & Kubectl providers
+# ----------------------------------------------------------
+data "google_client_config" "default" {}
+
+provider "helm" {
+  kubernetes {
+    host                   = "https://${google_container_cluster.primary.endpoint}"
+    token                  = data.google_client_config.default.access_token
+    cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
+  }
+}
+
+provider "kubectl" {
+  host                   = "https://${google_container_cluster.primary.endpoint}"
+  token                  = data.google_client_config.default.access_token
+  cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
+  load_config_file       = false
+}
+
+# ----------------------------------------------------------
 # VPC & Networking
 # ----------------------------------------------------------
-resource "google_compute_global_address" "systeam-static-ip" {
-  name = "systeam-static-ip"
+resource "google_compute_address" "nginx_ingress_ip" {
+  name   = "nginx-ingress-ip"
+  region = var.region
 }
 
 resource "google_compute_network" "vpc" {
@@ -184,4 +213,78 @@ resource "google_service_account_iam_binding" "workload_identity_binding" {
   members = [
     "serviceAccount:${var.project_id}.svc.id.goog[external-secrets/external-secrets]"
   ]
+}
+
+# ----------------------------------------------------------
+# ArgoCD via Helm (cluster-internal, port-forward only)
+# ----------------------------------------------------------
+resource "helm_release" "argocd" {
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  version          = "7.7.16"
+  namespace        = "argocd"
+  create_namespace = true
+  wait             = true
+  timeout          = 600
+
+  set {
+    name  = "server.service.type"
+    value = "ClusterIP"
+  }
+
+  # Disable server ingress — access via kubectl port-forward only
+  set {
+    name  = "server.ingress.enabled"
+    value = "false"
+  }
+
+  depends_on = [google_container_node_pool.primary_nodes]
+}
+
+# ----------------------------------------------------------
+# ingress-nginx via Helm
+# ----------------------------------------------------------
+resource "helm_release" "ingress_nginx" {
+  name             = "ingress-nginx"
+  repository       = "https://kubernetes.github.io/ingress-nginx"
+  chart            = "ingress-nginx"
+  version          = "4.12.1"
+  namespace        = "ingress-nginx"
+  create_namespace = true
+  wait             = true
+  timeout          = 600
+
+  set {
+    name  = "controller.service.loadBalancerIP"
+    value = google_compute_address.nginx_ingress_ip.address
+  }
+
+  set {
+    name  = "controller.service.externalTrafficPolicy"
+    value = "Local"
+  }
+
+  depends_on = [google_container_node_pool.primary_nodes]
+}
+
+# ----------------------------------------------------------
+# cert-manager via Helm
+# ----------------------------------------------------------
+resource "helm_release" "cert_manager" {
+  name             = "cert-manager"
+  repository       = "https://charts.jetstack.io"
+  chart            = "cert-manager"
+  version          = "1.17.2"
+  namespace        = "cert-manager"
+  create_namespace = true
+  wait             = true
+  timeout          = 600
+
+  set {
+    name  = "crds.enabled"
+    value = "true"
+  }
+
+  depends_on = [google_container_node_pool.primary_nodes]
 }

@@ -1,0 +1,234 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/tracking-id: systeam-app:argoproj.io/Application:argocd/systeam-app
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"systeam-app:argoproj.io/Application:argocd/systeam-app"},"name":"systeam-app","namespace":"argocd"},"spec":{"destination":{"namespace":"default","server":"https://kubernetes.default.svc"},"project":"default","source":{"path":"k8s","repoURL":"https://github.com/abrilbabino/Ideafy.git","targetRevision":"HEAD"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+  creationTimestamp: "2026-06-11T03:03:46Z"
+  generation: 2865
+  name: systeam-app
+  namespace: argocd
+  resourceVersion: "1781659670948559008"
+  uid: 6b11c3d5-7408-4a93-be6d-af4403bf4113
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: k8s
+    repoURL: https://github.com/abrilbabino/Ideafy.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+status:
+  controllerNamespace: argocd
+  health:
+    lastTransitionTime: "2026-06-13T17:23:18Z"
+    status: Healthy
+  history:
+  - deployStartedAt: "2026-06-11T03:52:48Z"
+    deployedAt: "2026-06-11T03:52:57Z"
+    id: 0
+    initiatedBy:
+      automated: true
+    revision: 589241ae5c4e7f3783e3919b91a54d40f21a1111
+    source:
+      path: k8s
+      repoURL: https://github.com/abrilbabino/Ideafy.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-06-11T04:00:58Z"
+    deployedAt: "2026-06-11T04:01:06Z"
+    id: 1
+    initiatedBy:
+      automated: true
+    revision: 90b3dff2f0c1b136dca439135901ef077abfd596
+    source:
+      path: k8s
+      repoURL: https://github.com/abrilbabino/Ideafy.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-06-11T04:32:58Z"
+    deployedAt: "2026-06-11T04:33:05Z"
+    id: 2
+    initiatedBy:
+      automated: true
+    revision: a378c2ae000af531ee7b8abe396165110d2ce37c
+    source:
+      path: k8s
+      repoURL: https://github.com/abrilbabino/Ideafy.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-06-11T04:58:42Z"
+    deployedAt: "2026-06-11T04:58:49Z"
+    id: 3
+    initiatedBy:
+      automated: true
+    revision: ff878931028c23f92aefd88d22d4244c1ae1af0e
+    source:
+      path: k8s
+      repoURL: https://github.com/abrilbabino/Ideafy.git
+      targetRevision: HEAD
+  - deployStartedAt: "2026-06-12T22:40:23Z"
+    deployedAt: "2026-06-12T22:40:31Z"
+    id: 4
+    initiatedBy:
+      automated: true
+    revision: 8b8935bab4038693c1635bf99b8948b8af852ddf
+    source:
+      path: k8s
+      repoURL: https://github.com/abrilbabino/Ideafy.git
+      targetRevision: HEAD
+  operationState:
+    finishedAt: "2026-06-12T22:50:58Z"
+    message: successfully synced (all tasks run)
+    operation:
+      initiatedBy:
+        automated: true
+      retry:
+        limit: 5
+      sync:
+        autoHealAttemptsCount: 1
+        prune: true
+        resources:
+        - group: argoproj.io
+          kind: Application
+          name: systeam-app
+        revision: 8b8935bab4038693c1635bf99b8948b8af852ddf
+        source:
+          path: k8s
+          repoURL: https://github.com/abrilbabino/Ideafy.git
+          targetRevision: HEAD
+    phase: Succeeded
+    startedAt: "2026-06-12T22:50:57Z"
+    syncResult:
+      resources:
+      - group: argoproj.io
+        hookPhase: Running
+        kind: Application
+        message: application.argoproj.io/systeam-app configured
+        name: systeam-app
+        namespace: argocd
+        status: Synced
+        syncPhase: Sync
+        version: v1alpha1
+      revision: 8b8935bab4038693c1635bf99b8948b8af852ddf
+      source:
+        path: k8s
+        repoURL: https://github.com/abrilbabino/Ideafy.git
+        targetRevision: HEAD
+  reconciledAt: "2026-06-17T01:27:50Z"
+  resourceHealthSource: appTree
+  resources:
+  - kind: ConfigMap
+    name: systeam-config
+    namespace: default
+    status: Synced
+    version: v1
+  - kind: Service
+    name: auth-api
+    namespace: default
+    status: Synced
+    version: v1
+  - kind: Service
+    name: frontend
+    namespace: default
+    status: Synced
+    version: v1
+  - kind: Service
+    name: gateway
+    namespace: default
+    status: Synced
+    version: v1
+  - kind: Service
+    name: projects-api
+    namespace: default
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: auth-api
+    namespace: default
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: frontend
+    namespace: default
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: gateway
+    namespace: default
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: projects-api
+    namespace: default
+    status: Synced
+    version: v1
+  - group: argoproj.io
+    kind: Application
+    name: external-secrets
+    namespace: argocd
+    status: Synced
+    syncWave: -2
+    version: v1alpha1
+  - group: argoproj.io
+    kind: Application
+    name: systeam-app
+    namespace: argocd
+    status: Synced
+    version: v1alpha1
+  - group: cloud.google.com
+    kind: BackendConfig
+    name: gateway-backendconfig
+    namespace: default
+    status: Synced
+    version: v1
+  - group: external-secrets.io
+    kind: ClusterSecretStore
+    name: gcp-store
+    status: Synced
+    syncWave: -1
+    version: v1beta1
+  - group: external-secrets.io
+    kind: ExternalSecret
+    name: systeam-secrets
+    namespace: default
+    status: Synced
+    version: v1beta1
+  - group: networking.k8s.io
+    kind: Ingress
+    name: systeam-ingress
+    namespace: default
+    status: Synced
+    version: v1
+  sourceHydrator: {}
+  sourceType: Directory
+  summary:
+    externalURLs:
+    - http://34.149.87.215/
+    - http://34.149.87.215/api/
+    - http://34.149.87.215/auth/
+    - http://34.149.87.215/login/
+    - http://34.149.87.215/oauth2/authorization/
+    images:
+    - us-central1-docker.pkg.dev/project-1944cf83-7f15-4f33-89b/systeam-repo/auth-api:latest
+    - us-central1-docker.pkg.dev/project-1944cf83-7f15-4f33-89b/systeam-repo/frontend:latest
+    - us-central1-docker.pkg.dev/project-1944cf83-7f15-4f33-89b/systeam-repo/gateway:latest
+    - us-central1-docker.pkg.dev/project-1944cf83-7f15-4f33-89b/systeam-repo/projects-api:latest
+  sync:
+    comparedTo:
+      destination:
+        namespace: default
+        server: https://kubernetes.default.svc
+      source:
+        path: k8s
+        repoURL: https://github.com/abrilbabino/Ideafy.git
+        targetRevision: HEAD
+    revision: 8b8935bab4038693c1635bf99b8948b8af852ddf
+    status: Synced

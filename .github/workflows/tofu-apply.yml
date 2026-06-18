@@ -51,11 +51,6 @@ jobs:
           cluster_name: systeam-gke-cluster
           location: us-central1
 
-      - name: Install ArgoCD
-        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-        run: |
-          kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-          kubectl apply --server-side=true --force-conflicts -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
       - name: Apply ArgoCD App
         if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'

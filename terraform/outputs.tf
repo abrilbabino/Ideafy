@@ -27,3 +27,8 @@ output "get_credentials_command" {
   value       = "gcloud container clusters get-credentials ${google_container_cluster.primary.name} --region ${var.region} --project ${var.project_id}"
   description = "Command to configure kubectl"
 }
+
+output "nginx_ingress_ip" {
+  value       = google_compute_address.nginx_ingress_ip.address
+  description = "Static IP assigned to nginx ingress controller LoadBalancer"
+}

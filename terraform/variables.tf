@@ -15,3 +15,15 @@ variable "cluster_name" {
   type        = string
   default     = "systeam-gke-cluster"
 }
+
+variable "domain" {
+  description = "Domain name for TLS and Ingress"
+  type        = string
+  default     = "ideafy.lat"
+}
+
+variable "letsencrypt_email" {
+  description = "Email for Let's Encrypt certificate notifications"
+  type        = string
+  default     = "abril.nadia.babino984@gmail.com"
+}
