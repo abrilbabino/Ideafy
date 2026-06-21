@@ -13,7 +13,8 @@ $Secrets = @(
     "BLOCKCHAIN_PRIVATE_KEY",
     "JWT_PRIVATE_KEY",
     "JWT_PUBLIC_KEY",
-    "GOOGLE_CLIENT_SECRET"
+    "GOOGLE_CLIENT_SECRET",
+    "SMTP_PASSWORD"
 )
 
 foreach ($SecretName in $Secrets) {
